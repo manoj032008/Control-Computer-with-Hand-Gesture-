@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Neural Mouse - Live Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --bg-main: #0B0F19;
+    --bg-card: #151D30;
+    --accent-blue: #3B82F6;
+    --accent-cyan: #06B6D4;
+    --accent-green: #10B981;
+    --accent-red: #EF4444;
+    --text-main: #F3F4F6;
+    --text-muted: #9CA3AF;
+    --border-color: #1E293B;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: rgba(21, 29, 48, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text-main);
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .logo-title {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .logo-subtitle {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    font-weight: 600;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-back:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-cyan);
+    transform: translateX(-3px);
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main {
+    flex: 1;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 1024px) {
+    main {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== VIDEO CARD ===== */
+  .video-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .video-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .video-title {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .video-title i {
+    color: var(--accent-cyan);
+  }
+
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-green);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .video-container {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #070913;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  }
+
+  .video-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .video-footer-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 14px 18px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-cyan);
+  }
+
+  /* ===== CONTROLS SIDEBAR ===== */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .panel-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  .panel-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-card h3 i {
+    color: var(--accent-cyan);
+  }
+
+  .gesture-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .gesture-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .gesture-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  .gesture-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    min-width: 44px;
+  }
+
+  .gesture-info {
+    flex: 1;
+  }
+
+  .gesture-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .gesture-action {
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+
+  /* Colors */
+  .badge-hover { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
+  .badge-click { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
+  .badge-shot  { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+  .badge-min   { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+  .badge-max   { background: rgba(59, 130, 246, 0.1); color: #60A5FA; }
+  .badge-close { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+  .badge-scroll { background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan); }
+  .badge-bright { background: rgba(234, 179, 8, 0.1); color: #EAB308; }
+
+  .instructions-box {
+    margin-top: auto;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .instructions-box h4 {
+    color: var(--text-main);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .instructions-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .instructions-box li {
+    position: relative;
+    padding-left: 16px;
+  }
+
+  .instructions-box li::before {
+    content: "•";
+    color: var(--accent-cyan);
+    font-size: 16px;
+    position: absolute;
+    left: 0;
+    top: -2px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <div class="nav-container">
+      <a href="/" class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-hand-sparkles"></i></div>
+        <div>
+          <div class="logo-title">AI NEURAL MOUSE</div>
+          <div class="logo-subtitle">Real-time control dashboard</div>
+        </div>
+      </a>
+      <a href="/" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Back to Homepage
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main>
+    <!-- Left Column: The Video Stream -->
+    <div class="video-card">
+      <div class="video-header">
+        <h2 class="video-title"><i class="fa-solid fa-display"></i> Interactive Stream</h2>
+        <div class="status-tag">
+          <span class="status-dot"></span> Active Feed
+        </div>
+      </div>
+      
+      <div class="video-container">
+        <img src="{{ url_for('video_feed') }}" alt="AI Neural Mouse Stream">
+      </div>
+      
+      <div class="video-footer-info">
+        <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan); margin-right: 6px;"></i>
+        <strong>Active Zone Constraint:</strong> The yellow bounding box in the video feed represents the Interaction Area. Hand tracking only updates the mouse cursor position when your pointer finger is inside this zone.
+      </div>
+    </div>
+
+    <!-- Right Column: Instructions and telemetry legend -->
+    <div class="sidebar">
+      <div class="panel-card">
+        <h3><i class="fa-solid fa-gears"></i> Gesture Action Guide</h3>
+        <div class="gesture-list">
+          
+          <div class="gesture-row">
+            <div class="gesture-badge badge-hover"><i class="fa-regular fa-hand-pointer"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Hover (Cursor Navigation)</div>
+              <div class="gesture-action">Extend index finger only. Moves cursor smoothly.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-click"><i class="fa-solid fa-computer-mouse"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Left Click</div>
+              <div class="gesture-action">Pinch thumb and index. Triggers mouse click.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-scroll"><i class="fa-solid fa-arrows-up-down"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Position Scroll (Index + Pinky)</div>
+              <div class="gesture-action">Above half-screen: Scroll UP. Below half-screen: Scroll DOWN.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-bright"><i class="fa-solid fa-sun"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Brightness Rotation (5 Fingers)</div>
+              <div class="gesture-action">Rotate open hand Clockwise: Brightness UP. Anti-clockwise: Brightness DOWN.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-shot"><i class="fa-solid fa-camera"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Capture Screenshot</div>
+              <div class="gesture-action">Extend thumb, index, and pinky. Saves image with flash.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-min"><i class="fa-regular fa-window-minimize"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Minimize Window</div>
+              <div class="gesture-action">Extend index, middle, and pinky. Minimizes current window.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-max"><i class="fa-regular fa-window-maximize"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Maximize Window</div>
+              <div class="gesture-action">Extend index, middle, ring, pinky. Maximizes current window.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-close"><i class="fa-solid fa-rectangle-xmark"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Close Window</div>
+              <div class="gesture-action">Peace / V-Sign (Index + Middle extended). Sends Alt+F4 command.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-click"><i class="fa-solid fa-hand-back-fist"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Right Click</div>
+              <div class="gesture-action">Pinch thumb and middle finger. Triggers right click.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-bright"><i class="fa-solid fa-volume-high"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Volume Control (Thumb Up / Down)</div>
+              <div class="gesture-action">Thumb UP: Volume Up. Thumb DOWN: Volume Down.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-close"><i class="fa-solid fa-volume-xmark"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Mute / Unmute Volume</div>
+              <div class="gesture-action">Extend little finger (pinky) only. Toggles master audio mute.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-scroll"><i class="fa-solid fa-forward-step"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Track Navigation (Pointing Left / Right)</div>
+              <div class="gesture-action">Point RIGHT: Previous Track. Point LEFT: Next Track.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-min"><i class="fa-solid fa-pause"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Pause Video</div>
+              <div class="gesture-action">Make a Fist on RIGHT side of frame. Sends Space key.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-click"><i class="fa-solid fa-play"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Play Video</div>
+              <div class="gesture-action">Make a Fist on LEFT side of frame. Sends Space key.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-max"><i class="fa-solid fa-floppy-disk"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Save File</div>
+              <div class="gesture-action">Cross Index & Middle fingers. Sends Ctrl+S command.</div>
+            </div>
+          </div>
+
+          <div class="gesture-row">
+            <div class="gesture-badge badge-hover"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+            <div class="gesture-info">
+              <div class="gesture-name">Camera Zoom In / Out</div>
+              <div class="gesture-action">Extend 3 fingers (Index + Middle + Ring). Move TOWARDS camera: Zoom In (Ctrl++). Move AWAY: Zoom Out (Ctrl+-).</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="panel-card instructions-box">
+        <h4><i class="fa-solid fa-lightbulb" style="color: var(--accent-cyan)"></i> Developer Tips</h4>
+        <ul>
+          <li><strong>Stabilization:</strong> The HUD draws real-time progress bars for each command. Keep a gesture held until the stabilizer lock fills up to trigger the action.</li>
+          <li><strong>Calibration:</strong> Face the camera directly. Adequate lighting around your hand improves MediaPipe's joint detection precision.</li>
+          <li><strong>Safety:</strong> Do not run this program on headless or shared servers, as anyone who connects can control your machine's inputs.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
