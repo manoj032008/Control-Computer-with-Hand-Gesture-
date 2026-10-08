@@ -1,6 +1,14 @@
 dist/
+build/
 __pycache__/
 *.pyc
 .venv/
 venv/
 .env
+.vercel/
+node_modules/
+# Companion virtual environment
+companion/.venv/
+companion/venv/
+__pycache__/
+*.pyc

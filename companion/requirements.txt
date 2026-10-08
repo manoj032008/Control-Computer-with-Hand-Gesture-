@@ -1,0 +1,18 @@
+# Companion app requirements
+# Install with: pip install -r requirements.txt
+
+# WebSocket server
+websockets>=12.0
+
+# OS automation (mouse, keyboard, screenshot)
+pyautogui>=0.9.54
+
+# Windows system volume control (Windows only — skip on Linux/macOS)
+pycaw>=20181226; sys_platform == "win32"
+comtypes>=1.2.0; sys_platform == "win32"
+
+# Screen brightness control (Windows + Linux)
+screen-brightness-control>=0.23.0
+
+# Pillow is needed by pyautogui for screenshots
+Pillow>=10.0.0
