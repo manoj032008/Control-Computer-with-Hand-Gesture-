@@ -1967,6 +1967,13 @@
 
       try {
         await camera.start();
+        if (!camera) {
+          // stopWebcam was called while camera was starting
+          const stream = videoEl.srcObject;
+          if (stream) stream.getTracks().forEach(t => t.stop());
+          videoEl.srcObject = null;
+          return;
+        }
         isTracking = true;
 
         if (bgWorker) bgWorker.postMessage('start');
@@ -2004,6 +2011,11 @@
     };
 
     window.stopWebcam = function(btn) {
+      if (btn && btn.disabled) return;
+      const originalHTML = btn ? btn._originalHTML : '';
+      if (btn) btn.disabled = true;
+
+      // Clean up MediaPipe explicitly
       if (bgWorker) { bgWorker.postMessage('stop'); }
       if (camera) { camera.stop(); camera = null; }
       if (hands) { hands.close(); hands = null; }
@@ -2020,6 +2032,7 @@
         videoEl.pause();
         videoEl.removeAttribute('src');
         videoEl.load();
+        videoEl.style.display = 'none';
       }
 
       const canvasEl   = document.getElementById('overlay-canvas');
@@ -2032,18 +2045,21 @@
       const placeholder= document.getElementById('webcam-placeholder');
       const hudEl      = document.getElementById('webcam-hud');
       const gestureHud = document.getElementById('gesture-hud');
+      const cursorEl   = document.getElementById('gesture-cursor');
 
       if (placeholder) placeholder.style.display = 'flex';
       if (hudEl)     hudEl.style.display = 'none';
       if (cursorEl)  cursorEl.style.display = 'none';
+      if (gestureHud) gestureHud.style.setProperty('display', 'none', 'important');
 
       // Reset top-left gesture label
       const gestLbl = document.getElementById('hud-gesture-label');
       if (gestLbl) gestLbl.textContent = 'None';
 
       if (btn) {
-        btn.innerHTML = btn._originalHTML || '<i class="fa-solid fa-play"></i> Try Live Demo';
+        btn.innerHTML = originalHTML || '<i class="fa-solid fa-play"></i> Try Live Demo';
         btn.style.background = '';
+        btn.style.opacity = '';
         btn.disabled = false;
       }
     };
