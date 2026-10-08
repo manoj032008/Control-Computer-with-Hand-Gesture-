@@ -795,6 +795,19 @@ class HandGestureController:
         self.raw_redo = False
         
         if result and result.multi_hand_landmarks:
+            # Filter out false positive detections (e.g. face/mouth) using MediaPipe's confidence score
+            if result.multi_handedness:
+                valid_landmarks = []
+                for idx, handedness in enumerate(result.multi_handedness):
+                    if handedness.classification[0].score >= 0.90:
+                        valid_landmarks.append(result.multi_hand_landmarks[idx])
+                
+                if valid_landmarks:
+                    result.multi_hand_landmarks = valid_landmarks
+                else:
+                    result.multi_hand_landmarks = None
+
+        if result and result.multi_hand_landmarks:
             if len(result.multi_hand_landmarks) >= 2:
                 h1 = result.multi_hand_landmarks[0]
                 h2 = result.multi_hand_landmarks[1]

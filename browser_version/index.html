@@ -1827,6 +1827,18 @@
         canvasCtx.scale(-1, 1);
         
         canvasCtx.drawImage(results.image, 0, 0, canvasEl.width, canvasEl.height);
+        
+        // Filter out false positive detections (e.g. face/mouth) using MediaPipe's confidence score
+        if (results.multiHandLandmarks && results.multiHandedness) {
+          const validLandmarks = [];
+          for (let i = 0; i < results.multiHandLandmarks.length; i++) {
+            if (results.multiHandedness[i].score >= 0.90) {
+              validLandmarks.push(results.multiHandLandmarks[i]);
+            }
+          }
+          results.multiHandLandmarks = validLandmarks;
+        }
+
         if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
           for (const landmarks of results.multiHandLandmarks) {
             drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: 3});
