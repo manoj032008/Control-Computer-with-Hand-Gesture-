@@ -2010,15 +2010,32 @@
       isTracking = false;
       gestureEngine = null;
 
+      const videoEl = document.getElementById('webcam-feed');
+      if (videoEl && videoEl.srcObject) {
+        const tracks = videoEl.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        videoEl.srcObject = null;
+      }
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.removeAttribute('src');
+        videoEl.load();
+      }
+
       const canvasEl   = document.getElementById('overlay-canvas');
+      if (canvasEl) {
+        const ctx = canvasEl.getContext('2d');
+        ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+        canvasEl.style.display = 'none';
+      }
+
       const placeholder= document.getElementById('webcam-placeholder');
       const hudEl      = document.getElementById('webcam-hud');
       const gestureHud = document.getElementById('gesture-hud');
 
-      if (canvasEl)  canvasEl.style.display = 'none';
       if (placeholder) placeholder.style.display = 'flex';
       if (hudEl)     hudEl.style.display = 'none';
-      cursorEl.style.display = 'none';
+      if (cursorEl)  cursorEl.style.display = 'none';
 
       // Reset top-left gesture label
       const gestLbl = document.getElementById('hud-gesture-label');
@@ -2138,17 +2155,12 @@
 
       } else if (res.doScrollUp) {
         const sentCompanion = toCompanion('SCROLL_UP');
-        const scrollDelta = -(res.scrollAmount || 50);
-        // Use 'instant' (not 'smooth') to prevent CSS smooth-scroll fighting rapid gesture events,
-        // which causes page shaking/oscillation when the scroll gesture is held.
-        window.scrollBy({ top: scrollDelta, behavior: 'instant' });
+        // scrolling logic removed to prevent webpage layout shifts
         actionText = sentCompanion ? 'Executed: Scroll Up (via Companion)' : 'Executed: Scroll Up';
 
       } else if (res.doScrollDown) {
         const sentCompanion = toCompanion('SCROLL_DOWN');
-        const scrollDelta = (res.scrollAmount || 50);
-        // Use 'instant' (not 'smooth') — same reason as above.
-        window.scrollBy({ top: scrollDelta, behavior: 'instant' });
+        // scrolling logic removed to prevent webpage layout shifts
         actionText = sentCompanion ? 'Executed: Scroll Down (via Companion)' : 'Executed: Scroll Down';
 
       } else if (res.doScreenshot) {
@@ -2169,20 +2181,12 @@
 
       } else if (res.doZoomIn) {
         const sentCompanion = toCompanion('ZOOM_IN');
-        try {
-          const cur = parseFloat(document.body.style.zoom) || 1;
-          const next = Math.min(3.0, cur + 0.1);
-          document.body.style.zoom = next.toFixed(1);
-        } catch (e) {}
+        // zoom logic removed to prevent webpage layout shrinking/splitting
         actionText = sentCompanion ? 'Executed: Zoom In (via Companion)' : 'Executed: Zoom In';
 
       } else if (res.doZoomOut) {
         const sentCompanion = toCompanion('ZOOM_OUT');
-        try {
-          const cur = parseFloat(document.body.style.zoom) || 1;
-          const next = Math.max(0.3, cur - 0.1);
-          document.body.style.zoom = next.toFixed(1);
-        } catch (e) {}
+        // zoom logic removed to prevent webpage layout shrinking/splitting
         actionText = sentCompanion ? 'Executed: Zoom Out (via Companion)' : 'Executed: Zoom Out';
 
       } else if (res.doPausePlay) {

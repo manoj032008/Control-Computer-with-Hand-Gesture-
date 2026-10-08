@@ -877,14 +877,16 @@ export class GestureEngine {
       this.currentGesture = 'BRIGHTNESS UP'; this.isPinching = false;
       if (now - this.lastBrightnessTime > this.brightnessRepeatInterval) {
         result.osAction = 'BRIGHTNESS_UP';
-        this.lastBrightnessTime = now; this.accumulatedRotation = 0;
+        this.lastBrightnessTime = now;
       }
+      this.accumulatedRotation = 0;
     } else if (abd) {
       this.currentGesture = 'BRIGHTNESS DOWN'; this.isPinching = false;
       if (now - this.lastBrightnessTime > this.brightnessRepeatInterval) {
         result.osAction = 'BRIGHTNESS_DOWN';
-        this.lastBrightnessTime = now; this.accumulatedRotation = 0;
+        this.lastBrightnessTime = now;
       }
+      this.accumulatedRotation = 0;
     } else if (avu) {
       this.currentGesture = 'VOLUME UP'; this.isPinching = false;
       if (now - this.lastVolumeTime > this.volumeRepeatInterval) {
